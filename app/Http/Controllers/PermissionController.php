@@ -30,7 +30,7 @@ class PermissionController extends Controller
 
         }
         else{
-            return redirect()->route("permissions.create");
+            return redirect()->route("permissions.create")->withInput()->withErrors($validator);
         }
 
     }

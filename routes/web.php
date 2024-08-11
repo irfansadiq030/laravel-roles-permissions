@@ -19,7 +19,8 @@ Route::middleware('auth')->group(function () {
 
     // permissions routes
     Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+    Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
