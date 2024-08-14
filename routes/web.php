@@ -18,8 +18,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // permissions routes
+    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+    Route::get('/permissions/{id}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
     Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
+    Route::post('/permissions/{id}', [PermissionController::class, 'update'])->name('permissions.update');
 
 });
 

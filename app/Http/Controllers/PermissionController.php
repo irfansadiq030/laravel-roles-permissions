@@ -3,50 +3,81 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 use Validator;
 
 class PermissionController extends Controller
 {
     // This method will show permissions page
-    public function index(){
+    public function index()
+    {
+
+        $permissions = Permission::orderBy("created_at", "desc")->paginate(2);
+        return view('permission.list', ['permissions' => $permissions]);
 
     }
 
     // This method will show create permissions page
-    public function create(){
+    public function create()
+    {
 
         return view('permission.create');
 
     }
 
     // This method will insert a permission in DB
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => "required|unique:permissions|min:3"
         ]);
 
         if ($validator->passes()) {
 
-        }
-        else{
+            Permission::create(["name" => $request->name]);
+
+            return redirect()->route("permissions.index")->with("success", "Permission Added Successfully!");
+
+        } else {
             return redirect()->route("permissions.create")->withInput()->withErrors($validator);
         }
 
     }
 
     // This method will show edit permission page
-    public function edit(){
+    public function edit($id)
+    {
 
+        $permission = Permission::findOrFail($id);
+        return view("permission.edit", ["permission" => $permission]);
     }
 
     // This method will update permission
-    public function update(){
+    public function update($id, Request $request)
+    {
+        $permission = Permission::findOrFail($id);
 
+        // dd($request);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:3|unique:permissions,name'
+        ]);
+
+        if ($validator->passes()) {
+
+            $permission->name = $request->name;
+            $permission->save();
+            return redirect()->route("permissions.index")->with("success", "Permission Updated Successfully!");
+
+        } else {
+            return redirect()->route("permissions.edit", $id)->withInput()->withErrors($validator);
+        }
     }
 
     // This method will delete the permission
-    public function destroy(){
+    public function destroy()
+    {
 
     }
 }
