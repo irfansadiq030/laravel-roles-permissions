@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Session;
 use Spatie\Permission\Models\Permission;
 use Validator;
 
@@ -12,7 +13,7 @@ class PermissionController extends Controller
     public function index()
     {
 
-        $permissions = Permission::orderBy("created_at", "desc")->paginate(2);
+        $permissions = Permission::orderBy("created_at", "desc")->paginate(5);
         return view('permission.list', ['permissions' => $permissions]);
 
     }
@@ -76,8 +77,25 @@ class PermissionController extends Controller
     }
 
     // This method will delete the permission
-    public function destroy()
+    public function destroy(Request $request)
     {
+        $id = $request->id;
+        $permission = Permission::findOrFail($id);
+
+        if ($permission == null) {
+            session()->flash("error", "Permission Not Found");
+
+            return response()->json([
+                'status' => false,
+            ]);
+        }
+
+        $permission->delete();
+
+        session()->flash('success','Permission Deleted Successfully');
+        return response()->json([
+            'status' => true,
+        ]);
 
     }
 }

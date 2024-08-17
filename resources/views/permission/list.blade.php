@@ -27,16 +27,16 @@
 
                     @if ($permissions->isNotEmpty())
 
-                        @foreach ($permissions as $permission)
+                        @foreach ($permissions as $index => $permission)
                             <tr class="border-b">
-                                <td class="py-4" width="100">{{ $permission->id }}</td>
+                                <td class="py-4" width="100">{{ $index }}</td>
                                 <td>{{ $permission->name }}</td>
                                 <td>{{ \Carbon\Carbon::parse($permission->created_at)->format('d M, Y') }}</td>
                                 <td>
                                     <a href="{{ route('permissions.edit', $permission->id) }}"
                                         class="bg-slate-700 text-sm rounded-md text-white px-5 py-2 mr-3 hover:bg-slate-600">Edit</a>
 
-                                    <a href="{{ route('permissions.create') }}"
+                                    <a onclick="deletePermission({{ $permission->id }})" href="#"
                                         class="bg-red-600 text-sm rounded-md text-white px-5 py-2 hover:bg-red-500">Delete</a>
                                 </td>
                             </tr>
@@ -49,4 +49,32 @@
             {{ $permissions->links() }}
         </div>
     </div>
+
+    <x-slot name="script">
+        <script>
+            function deletePermission(id) {
+
+                if (confirm("Are you sure you want to delete this permission")) {
+
+                    $.ajax({
+                        url: '{{ route('permissions.destroy') }}',
+                        type: "delete",
+                        data: {
+                            id
+                        },
+                        dataType: 'json',
+                        headers: {
+                            'x-csrf-token': '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status) {
+                                window.location.href = '{{ route('permissions.index') }}'
+                            }
+                        }
+                    })
+                }
+            }
+        </script>
+    </x-slot>
+
 </x-app-layout>
